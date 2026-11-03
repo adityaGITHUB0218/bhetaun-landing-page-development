@@ -3,7 +3,22 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
-import { ArrowRight, CalendarDays, Check, ChevronDown, Globe2, Send, MessageCircle, MapPin, Menu, Search, ShieldCheck, Sparkles, Star, X } from 'lucide-react'
+import {
+  ArrowRight,
+  CalendarDays,
+  Check,
+  ChevronDown,
+  Globe2,
+  MapPin,
+  Menu,
+  MessageCircle,
+  Search,
+  Send,
+  ShieldCheck,
+  Sparkles,
+  Star,
+  X,
+} from 'lucide-react'
 
 const categories = [
   { name: 'Salons & Haircut', icon: '✂', tone: 'bg-[#fff2ec] text-[#e36e4f]' },
