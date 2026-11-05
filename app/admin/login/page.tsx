@@ -15,9 +15,15 @@ export default function AdminLoginPage() {
   const [loading, setLoading] = useState(false)
 
   async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); setError(''); setLoading(true)
+    event.preventDefault()
+    if (loading) return
+    setError(''); setLoading(true)
     const { data, error: authError } = await supabase().auth.signInWithPassword({ email: email.trim(), password })
-    if (authError || !data.user) { setError('Invalid admin credentials.'); setLoading(false); return }
+    if (authError || !data.user) {
+      const message = authError?.message.toLowerCase() ?? ''
+      setError(message.includes('rate limit') || message.includes('too many') ? 'Too many attempts. Wait for the Supabase cooldown to expire before trying again.' : message.includes('confirm') ? 'Please verify your email address before signing in.' : 'Invalid admin credentials.')
+      setLoading(false); return
+    }
     const { data: profile, error: profileError } = await supabase().from('profiles').select('role').eq('id', data.user.id).single()
     if (profileError || profile?.role !== 'Admin') { await supabase().auth.signOut(); setError('This account is not authorized for the Admin Portal.'); setLoading(false); return }
     router.push('/admin'); router.refresh()
