@@ -33,7 +33,7 @@ export default function DashboardPage() {
       } else if (currentProfile.role === 'Vendor / Business Owner') {
         const businessResult = await supabase().from('businesses').select('id, name, status, rating, review_count').eq('owner_id', userId).order('created_at', { ascending: false })
         if (!businessResult.error) setBusinesses((businessResult.data ?? []) as Business[])
-        const ownedIds = (businessResult.data ?? []).map((business) => business.id)
+        const ownedIds = (businessResult.data ?? []).map((business: { id: string }) => business.id)
         if (ownedIds.length) {
           const appointmentResult = await supabase().from('appointments').select('id, appointment_date, starts_at, status, total_price, business:businesses(name)').in('business_id', ownedIds).order('appointment_date', { ascending: true })
           if (!appointmentResult.error) setAppointments((appointmentResult.data ?? []) as unknown as Appointment[])
