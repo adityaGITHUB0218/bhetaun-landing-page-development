@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ArrowRight, CalendarDays, CheckCircle2, LogOut, Plus, Store, Users } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -10,7 +10,7 @@ type Appointment = { id: string; appointment_date: string; starts_at: string; st
 type Business = { id: string; name: string; status: string; rating: number; review_count: number }
 
 export default function DashboardPage() {
-  const supabase = useMemo(() => createClient(), [])
+  const supabase = () => createClient()
   const [profile, setProfile] = useState<Profile | null>(null)
   const [appointments, setAppointments] = useState<Appointment[]>([])
   const [businesses, setBusinesses] = useState<Business[]>([])
@@ -20,35 +20,35 @@ export default function DashboardPage() {
 
   useEffect(() => {
     async function loadDashboard() {
-      const { data: userData, error: userError } = await supabase.auth.getUser()
+      const { data: userData, error: userError } = await supabase().auth.getUser()
       if (userError || !userData.user) { setError('Please log in to view your dashboard.'); setLoading(false); return }
       const userId = userData.user.id
-      const profileResult = await supabase.from('profiles').select('role, full_name').eq('id', userId).single()
+      const profileResult = await supabase().from('profiles').select('role, full_name').eq('id', userId).single()
       if (profileResult.error) { setError('We could not load your profile.'); setLoading(false); return }
       const currentProfile = profileResult.data as Profile
       setProfile(currentProfile)
       if (currentProfile.role === 'Customer') {
-        const result = await supabase.from('appointments').select('id, appointment_date, starts_at, status, total_price, business:businesses(name)').eq('customer_id', userId).order('appointment_date', { ascending: true })
+        const result = await supabase().from('appointments').select('id, appointment_date, starts_at, status, total_price, business:businesses(name)').eq('customer_id', userId).order('appointment_date', { ascending: true })
         if (!result.error) setAppointments((result.data ?? []) as unknown as Appointment[])
       } else if (currentProfile.role === 'Vendor / Business Owner') {
-        const businessResult = await supabase.from('businesses').select('id, name, status, rating, review_count').eq('owner_id', userId).order('created_at', { ascending: false })
+        const businessResult = await supabase().from('businesses').select('id, name, status, rating, review_count').eq('owner_id', userId).order('created_at', { ascending: false })
         if (!businessResult.error) setBusinesses((businessResult.data ?? []) as Business[])
         const ownedIds = (businessResult.data ?? []).map((business) => business.id)
         if (ownedIds.length) {
-          const appointmentResult = await supabase.from('appointments').select('id, appointment_date, starts_at, status, total_price, business:businesses(name)').in('business_id', ownedIds).order('appointment_date', { ascending: true })
+          const appointmentResult = await supabase().from('appointments').select('id, appointment_date, starts_at, status, total_price, business:businesses(name)').in('business_id', ownedIds).order('appointment_date', { ascending: true })
           if (!appointmentResult.error) setAppointments((appointmentResult.data ?? []) as unknown as Appointment[])
         }
       } else {
-        const [businessResult, pendingResult, userResult] = await Promise.all([supabase.from('businesses').select('id, name, status, rating, review_count'), supabase.from('businesses').select('id', { count: 'exact', head: true }).eq('status', 'pending'), supabase.from('profiles').select('id', { count: 'exact', head: true })])
+        const [businessResult, pendingResult, userResult] = await Promise.all([supabase().from('businesses').select('id, name, status, rating, review_count'), supabase().from('businesses').select('id', { count: 'exact', head: true }).eq('status', 'pending'), supabase().from('profiles').select('id', { count: 'exact', head: true })])
         setBusinesses((businessResult.data ?? []) as Business[])
         setCounts({ users: userResult.count ?? 0, pending: pendingResult.count ?? 0, businesses: businessResult.data?.length ?? 0 })
       }
       setLoading(false)
     }
     loadDashboard()
-  }, [supabase])
+  }, [])
 
-  async function signOut() { await supabase.auth.signOut(); window.location.href = '/' }
+  async function signOut() { await supabase().auth.signOut(); window.location.href = '/' }
   if (loading) return <main className="grid min-h-screen place-items-center bg-[#f7faff] text-sm text-[#71809a]">Loading your dashboard…</main>
   if (error || !profile) return <main className="grid min-h-screen place-items-center bg-[#f7faff] px-5"><div className="rounded-2xl bg-white p-8 text-center shadow-sm"><h1 className="font-extrabold">Dashboard unavailable</h1><p className="mt-2 text-sm text-[#71809a]">{error}</p><Link href="/auth" className="mt-5 inline-flex rounded-xl bg-[#155bd5] px-5 py-3 text-sm font-bold text-white">Log in</Link></div></main>
   const isAdmin = profile.role === 'Admin'
