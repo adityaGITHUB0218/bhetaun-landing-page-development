@@ -31,9 +31,11 @@ from demo_owner cross join active_categories category join (values
  ('Glow Beauty Salon','glow-beauty-salon','Warm, modern hair styling and grooming appointments for every day.','/glow-salon.png','/salon-hero.png','hello@demo.bhetaun.local','Jhamsikhel','Lalitpur',4.9,128,'Salons & Haircut'),
  ('Classic Men''s Salon','classic-mens-salon','Classic cuts, beard care and relaxing grooming in a friendly studio.','/salon-hero.png','/salon-hero.png','classic@demo.bhetaun.local','New Baneshwor','Kathmandu',4.8,86,'Salons & Haircut'),
  ('Urban Style Hair Studio','urban-style-hair-studio','Contemporary cuts, colour and styling from a creative local team.','/salon-hero.png','/bhetaun-professionals.png','urban@demo.bhetaun.local','Pulchowk','Lalitpur',4.7,64,'Salons & Haircut'),
+ ('Royal Hair Studio','royal-hair-studio','Premium cuts, styling and occasion looks from a polished local studio.','/salon-hero.png','/bhetaun-professionals.png','royal@demo.bhetaun.local','Maharajgunj','Kathmandu',4.8,73,'Salons & Haircut'),
  ('Aura Beauty Parlour','aura-beauty-parlour','Personalized beauty care and occasion-ready services in a calm space.','/aura-beauty.png','/aura-beauty.png','aura@demo.bhetaun.local','Lazimpat','Kathmandu',4.8,96,'Beauty Parlour'),
  ('Radiance Beauty Studio','radiance-beauty-studio','Facials, brows and gentle beauty treatments with clear pricing.','/aura-beauty.png','/aura-beauty.png','radiance@demo.bhetaun.local','Boudha','Kathmandu',4.6,51,'Beauty Parlour'),
- ('Elegant Beauty Lounge','elegant-beauty-lounge','A polished beauty lounge for self-care appointments and events.','/aura-beauty.png','/aura-beauty.png','elegant@demo.bhetaun.local','Lakeside','Pokhara',4.7,42,'Beauty Parlour')
+ ('Elegant Beauty Lounge','elegant-beauty-lounge','A polished beauty lounge for self-care appointments and events.','/aura-beauty.png','/aura-beauty.png','elegant@demo.bhetaun.local','Lakeside','Pokhara',4.7,42,'Beauty Parlour'),
+ ('Glamour Beauty Parlour','glamour-beauty-parlour','Beauty, brows and event-ready treatments with transparent NPR pricing.','/aura-beauty.png','/aura-beauty.png','glamour@demo.bhetaun.local','Thamel','Kathmandu',4.7,58,'Beauty Parlour')
 ) as demo(name,slug,description,logo_url,cover_image_url,email,address,city,rating,review_count,category_name) on demo.category_name = category.name
 on conflict (slug) do update set status = 'approved', is_demo = true;
 
