@@ -1,7 +1,6 @@
 import { Analytics } from '@vercel/analytics/next'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import { SiteAccountBar } from '@/components/site-account-bar'
 
 export const metadata: Metadata = {
   title: 'Bhetaun — Book better in Nepal',
@@ -42,7 +41,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="antialiased">
-        <SiteAccountBar />
         {children}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>
