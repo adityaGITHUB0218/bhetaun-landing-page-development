@@ -4,7 +4,6 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { normalizeRole } from '@/lib/auth/roles'
 
 export default function AuthSuccessPage() {
   const router = useRouter()
@@ -18,7 +17,7 @@ export default function AuthSuccessPage() {
       if (!user) { if (active) setMessage('Your session could not be created.'); return }
       const { data: profile } = await supabase.from('profiles').select('role').eq('id', user.id).maybeSingle()
       if (!active) return
-      router.replace(normalizeRole(profile?.role) === 'admin' ? '/admin' : '/dashboard')
+      router.replace(profile?.role === 'Admin' ? '/admin' : '/dashboard')
     }
     void finishAuth()
     return () => { active = false }

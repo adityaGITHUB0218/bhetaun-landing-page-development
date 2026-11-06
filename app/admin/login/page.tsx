@@ -5,7 +5,6 @@ import { useState, type FormEvent } from 'react'
 import { ArrowLeft, ShieldCheck } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { normalizeRole } from '@/lib/auth/roles'
 
 export default function AdminLoginPage() {
   const router = useRouter()
@@ -26,7 +25,7 @@ export default function AdminLoginPage() {
       setLoading(false); return
     }
     const { data: profile, error: profileError } = await supabase().from('profiles').select('role').eq('id', data.user.id).single()
-    if (profileError || normalizeRole(profile?.role) !== 'admin') { await supabase().auth.signOut(); setError('This account is not authorized for the Admin Portal.'); setLoading(false); return }
+    if (profileError || profile?.role !== 'Admin') { await supabase().auth.signOut(); setError('This account is not authorized for the Admin Portal.'); setLoading(false); return }
     router.push('/admin'); router.refresh()
   }
 
